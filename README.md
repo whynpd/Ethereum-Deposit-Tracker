@@ -159,7 +159,7 @@ Here is an example of the terminal output when the tracker starts running and mo
 
 2. Telegram Notifications
 You will receive notifications in Telegram similar to the following message when a new deposit event occurs:
-
+!(https://github.com/whynpd/Luganodes---SDE-Assignment-21BCE2703/blob/main/Telegram.png)
 
 3. Grafana Dashboard
 Visualize the deposit activity in real-time on your Grafana dashboard:
