@@ -156,16 +156,19 @@ Errors: Logs any errors encountered during execution.
 1. Terminal Output
 Here is an example of the terminal output when the tracker starts running and monitors deposits.
 
+<img src="https://github.com/whynpd/Luganodes---SDE-Assignment-21BCE2703/blob/main/Log.png" alt="Telegram" width="600" height="350"/>
 
-2. Telegram Notifications
+3. Telegram Notifications
 You will receive notifications in Telegram similar to the following message when a new deposit event occurs:
-![Telegram Logo](https://github.com/whynpd/Luganodes---SDE-Assignment-21BCE2703/blob/main/Telegram.png)
 
-3. Grafana Dashboard
+<img src="https://github.com/whynpd/Luganodes---SDE-Assignment-21BCE2703/blob/main/Telegram.png" alt="Telegram" width="600" height="350"/>
+
+
+4. Grafana Dashboard
 Visualize the deposit activity in real-time on your Grafana dashboard:
 
 
-4. Prometheus Metrics
+5. Prometheus Metrics
 Prometheus collects metrics that are visualized in Grafana. You can view raw data directly in Prometheus as well:
 
 ## _FILES INVOLVED IN THIS PROJECT_
@@ -256,27 +259,43 @@ while True:
 
 
 
-Contribution
-Contributions are welcome! If you have any ideas or improvements, feel free to open an issue or submit a pull request. Please follow the standard GitHub Flow for contributions.
+_Contribution_
 
-License
+Contributions are welcome!
+If you have any ideas or improvements, feel free to open an issue or submit a pull request. Please follow the standard GitHub Flow for contributions.
+
+_License_
+
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-# FAQ
+## FAQ
 1. How does this project monitor Ethereum deposits?
-The Ethereum Deposit Tracker listens for DepositEvent from the Ethereum Beacon Chain deposit contract. These events are fetched, processed, and then logged in MongoDB. Notifications are sent to Telegram for new deposits, and data is visualized in Grafana.
+
+#The Ethereum Deposit Tracker listens for DepositEvent from the Ethereum Beacon Chain deposit contract. These events are fetched, processed, and then logged in MongoDB. Notifications are sent to Telegram for new deposits, and data is visualized in Grafana.
 
 2. What technologies are used in this project?
-Web3.py for interacting with the Ethereum blockchain.
-MongoDB for storing transaction data.
-Prometheus for collecting and exposing metrics.
-Grafana for real-time visualization.
-Telegram API for sending notifications.
-3. How can I add more Telegram chat IDs?
-Use the telegram.py script to update chat IDs by polling Telegram’s getUpdates API and storing new chat IDs in a chat_ids.txt file.
 
-# Additional Resources
+#Web3.py for interacting with the Ethereum blockchain.
+
+#MongoDB for storing transaction data.
+
+#Prometheus for collecting and exposing metrics.
+
+#Grafana for real-time visualization.
+
+#Telegram API for sending notifications.
+
+3. How can I add more Telegram chat IDs?
+
+#Use the telegram.py script to update chat IDs by polling Telegram’s getUpdates API and storing new chat IDs in a chat_ids.txt file.
+
+## Additional Resources
 Ethereum Beacon Chain Deposit Contract
+
 Web3.py Documentation
+
 Prometheus Documentation
+
 Grafana Documentation
+
+Another Great Resource that helped me out a lot is: https://www.youtube.com/watch?v=M576WGiDBdQ&list=PLTwiqKOPckq-jVx4kR-yHJQe19SrmYf_i
