@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 import requests
 from prometheus_client import start_http_server, Counter
-import time
 
 # Load environment variables (if using a .env file)
 load_dotenv()
@@ -24,6 +23,9 @@ logging.basicConfig(
 # Create a logger object
 logger = logging.getLogger(__name__)
 
+# Define a metric to count deposits
+deposit_counter = Counter('deposits', 'Number of deposits detected')
+
 # Replace with your actual values
 INFURA_URL = os.getenv('INFURA_URL')  # Alchemy URL from .env
 web3 = Web3(Web3.HTTPProvider(INFURA_URL))
@@ -40,14 +42,13 @@ contract_address = '0x00000000219ab540356cBB839Cbe05303d7705Fa'
 # MongoDB connection
 mongo_uri = os.getenv('MONGO_URI')  # MongoDB connection string from .env
 client = MongoClient(mongo_uri)
-db = client['your_database_name']  
-collection = db['your_collection_name']  
+db = client['your_database_name']  # Replace with your actual database name
+collection = db['your_collection_name']  # Replace with your actual collection name
 
 # Telegram notification function
 BOT_TOKEN = '7411494795:AAHCTIGi5MpdAGfSF9_mLv_WHTV7t-rQkx0'
 TELEGRAM_API_URL = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
 CHAT_IDS_FILE = 'chat_ids.txt'
-PROCESSED_TX_FILE = 'processed_tx.txt'
 
 def send_telegram_message(message, chat_ids):
     for chat_id in chat_ids:
@@ -64,19 +65,6 @@ def read_chat_ids():
             return [line.strip() for line in file.readlines()]
     except FileNotFoundError:
         return []
-
-def get_processed_transactions():
-    """Read processed transactions from a file."""
-    try:
-        with open(PROCESSED_TX_FILE, 'r') as file:
-            return set(line.strip() for line in file.readlines())
-    except FileNotFoundError:
-        return set()
-
-def add_processed_transaction(tx_hash):
-    """Add a transaction hash to the processed transactions file."""
-    with open(PROCESSED_TX_FILE, 'a') as file:
-        file.write(f"{tx_hash}\n")
 
 # Function to get transaction receipt
 def get_transaction_receipt(tx_hash):
@@ -116,24 +104,14 @@ def fetch_deposit_logs():
         logger.error(f"Error fetching deposit logs: {e}")
         return []
 
-# Define a metric to count deposits
-deposit_counter = Counter('deposits', 'Number of deposits detected')
-
+# Function to process logs and store them in MongoDB
 def process_logs(logs):
     if not logs:
         logger.info("No logs found.")
         return
 
-    chat_ids = read_chat_ids()
-    processed_tx_hashes = get_processed_transactions()
-
     for log in logs:
         tx_hash = log['transactionHash'].hex()
-        
-        # Check if this transaction has already been processed
-        if tx_hash in processed_tx_hashes:
-            continue
-
         receipt = get_transaction_receipt(tx_hash)
         
         if receipt:
@@ -143,10 +121,16 @@ def process_logs(logs):
             if block:
                 block_timestamp = block['timestamp']
                 deposit_counter.inc()  # Increment deposit count
+                deposit_info = {
+                    "transactionHash": tx_hash,
+                    "blockNumber": block_number,
+                    "blockTimestamp": block_timestamp
+                }
                 
                 # Notify via Telegram
+                chat_ids = read_chat_ids()
                 if chat_ids:
-                    send_telegram_message(f"New deposit detected: {{'transactionHash': '{tx_hash}', 'blockNumber': {block_number}, 'blockTimestamp': {block_timestamp}}}", chat_ids)
+                    send_telegram_message(f"New deposit detected: {deposit_info}", chat_ids)
                 
                 # Extract additional information from logs if needed
                 for log_entry in receipt['logs']:
@@ -161,23 +145,17 @@ def process_logs(logs):
                         }
                         result = collection.insert_one(document)
                         logger.info(f"Document inserted with ID: {result.inserted_id}")
-
-                # Mark this transaction as processed
-                add_processed_transaction(tx_hash)
             else:
                 logger.warning(f"Failed to fetch block details for block number {block_number}")
         else:
             logger.warning(f"Failed to fetch transaction receipt for hash {tx_hash}")
 
-# Fetch and process logs
+# Start Prometheus HTTP server to expose metrics
 if __name__ == '__main__':
-    start_http_server(9090)  # Expose metrics on port 9090
+    start_http_server(8000)  # Expose metrics on port 8000
     while True:
         logs = fetch_deposit_logs()
         process_logs(logs)
-        time.sleep(60)  # Sleep for 60 seconds before the next fetch
-
-
 
 
 
