@@ -167,9 +167,12 @@ You will receive notifications in Telegram similar to the following message when
 4. Grafana Dashboard
 Visualize the deposit activity in real-time on your Grafana dashboard:
 
+<img src="https://github.com/whynpd/Luganodes---SDE-Assignment-21BCE2703/blob/main/Grafana.png" alt="Telegram" width="600" height="350"/>
 
-5. Prometheus Metrics
+6. Prometheus Metrics
 Prometheus collects metrics that are visualized in Grafana. You can view raw data directly in Prometheus as well:
+
+<img src="https://github.com/whynpd/Luganodes---SDE-Assignment-21BCE2703/blob/main/Prometheus.png" alt="Telegram" width="600" height="350"/>
 
 ## _FILES INVOLVED IN THIS PROJECT_
 ### tracker.py
@@ -181,8 +184,8 @@ Logging Configuration:
 
 Purpose: To log debug information and errors.
 Details: Logs are written to tracker.log and also output to the console. The logging level is set to DEBUG for detailed information.
-python
-Copy code
+
+```
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -191,80 +194,146 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+```
+
 Prometheus Metrics:
 
-Purpose: To count the number of deposit events.
-Details: Uses Prometheus Counter to track the number of deposits. The metric is exposed on port 8000.
-python
-Copy code
+Purpose: 
+To count the number of deposit events.
+
+Details: 
+Uses Prometheus Counter to track the number of deposits. The metric is exposed on port 8000.
+```
 deposit_counter = Counter('deposits', 'Number of deposits detected')
+```
+
 Ethereum Connection:
 
-Purpose: To connect to the Ethereum network.
-Details: Uses the Infura URL from environment variables to create a Web3 instance.
-python
-Copy code
+Purpose: 
+To connect to the Ethereum network.
+
+Details: 
+Uses the Infura URL from environment variables to create a Web3 instance.
+
+```
 web3 = Web3(Web3.HTTPProvider(INFURA_URL))
+```
+
 MongoDB Connection:
 
-Purpose: To store deposit data.
-Details: Connects to MongoDB using the URI from environment variables and selects the appropriate database and collection.
-python
-Copy code
+Purpose: 
+To store deposit data.
+
+Details: 
+Connects to MongoDB using the URI from environment variables and selects the appropriate database and collection.
+
+```
 client = MongoClient(mongo_uri)
 db = client['your_database_name']
 collection = db['your_collection_name']
+```
+
 Telegram Notifications:
 
-Purpose: To notify users of new deposits.
-Details: Sends messages to Telegram using a bot token. Chat IDs are read from chat_ids.txt.
-python
-Copy code
+Purpose: 
+To notify users of new deposits.
+
+Details: 
+Sends messages to Telegram using a bot token. Chat IDs are read from chat_ids.txt.
+
+```
 BOT_TOKEN = 'your_bot_token'
 TELEGRAM_API_URL = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
+```
+
 Fetching Deposit Logs:
 
-Purpose: To retrieve deposit logs from Ethereum.
-Details: Fetches logs from a range of blocks and filters them based on the contract address.
-python
-Copy code
+Purpose: 
+To retrieve deposit logs from Ethereum.
+
+Details: 
+Fetches logs from a range of blocks and filters them based on the contract address.
+
+```
 deposit_filter = web3.eth.filter({
     "address": contract_address,
     "fromBlock": start_block,
     "toBlock": latest_block
 })
+```
+
 Processing Logs:
 
-Purpose: To process each log entry and update metrics.
-Details: Retrieves transaction receipts, block details, and updates the Prometheus counter. Stores relevant deposit information in MongoDB.
-python
-Copy code
+Purpose: 
+To process each log entry and update metrics.
+
+Details: 
+Retrieves transaction receipts, block details, and updates the Prometheus counter. Stores relevant deposit information in MongoDB.
+
+```
 deposit_counter.inc()  # Increment deposit count
+```
+
 Starting the Prometheus HTTP Server:
 
-Purpose: To expose metrics to Prometheus.
-Details: Starts an HTTP server on port 8000 to serve the Prometheus metrics.
-python
-Copy code
+Purpose: 
+To expose metrics to Prometheus.
+
+Details: 
+Starts an HTTP server on port 8000 to serve the Prometheus metrics.
+
+```
 start_http_server(8000)
+```
 Main Loop:
 
-Purpose: To continuously fetch and process logs.
-Details: The script runs an infinite loop that periodically fetches logs and processes them.
-python
-Copy code
+Purpose: 
+To continuously fetch and process logs.
+
+Details: 
+The script runs an infinite loop that periodically fetches logs and processes them.
+
+```
 while True:
     logs = fetch_deposit_logs()
     process_logs(logs)
+```
+### telegram.py
 
+send_telegram_message(message, chat_ids):▶️
 
+  Sends a message to all specified chat IDs via Telegram.
+  
+  Logs successful and failed attempts.
 
-_Contribution_
+update_chat_ids():▶️
+
+  Fetches updates from Telegram to find new chat IDs.
+  
+  Updates the chat_ids.txt file with new chat IDs.
+  
+  Returns a list of new chat IDs.
+
+read_chat_ids():▶️
+
+  Reads chat IDs from chat_ids.txt.
+  
+  Returns a list of chat IDs.
+
+handle_new_deposit(event)▶️
+
+  Processes new deposit events.
+  
+  Constructs a message with deposit details.
+  
+  Sends the message to all registered chat IDs.
+
+### _Contribution_
 
 Contributions are welcome!
 If you have any ideas or improvements, feel free to open an issue or submit a pull request. Please follow the standard GitHub Flow for contributions.
 
-_License_
+### _License_
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
