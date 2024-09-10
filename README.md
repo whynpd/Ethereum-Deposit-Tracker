@@ -262,7 +262,7 @@ Contributions are welcome! If you have any ideas or improvements, feel free to o
 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-FAQ
+# FAQ
 1. How does this project monitor Ethereum deposits?
 The Ethereum Deposit Tracker listens for DepositEvent from the Ethereum Beacon Chain deposit contract. These events are fetched, processed, and then logged in MongoDB. Notifications are sent to Telegram for new deposits, and data is visualized in Grafana.
 
@@ -275,7 +275,7 @@ Telegram API for sending notifications.
 3. How can I add more Telegram chat IDs?
 Use the telegram.py script to update chat IDs by polling Telegram’s getUpdates API and storing new chat IDs in a chat_ids.txt file.
 
-Additional Resources
+# Additional Resources
 Ethereum Beacon Chain Deposit Contract
 Web3.py Documentation
 Prometheus Documentation
